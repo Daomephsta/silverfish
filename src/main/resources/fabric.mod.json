@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "silverfish",
+  "version": "${version}",
+  "name": "Silverfish",
+  "description": "Debugging tools for mod development",
+  "authors": ["Daomephsta"],
+
+  "license": "MIT",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "daomephsta.silverfish.Silverfish"
+    ]
+  },
+  "mixins": [
+    "silverfish.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    
+    "minecraft": "1.18.x",
+    "java": ">=17"
+  }
+}

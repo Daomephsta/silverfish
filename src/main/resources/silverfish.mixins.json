@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "daomephsta.silverfish.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "plugin": "daomephsta.silverfish.SilverfishMixinPlugin",
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
