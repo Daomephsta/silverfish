@@ -8,6 +8,7 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.OptionalInt;
 import java.util.Set;
 
@@ -31,28 +32,51 @@ public class SilverfishConfig
     public final OriginTracing originTracing;
     public static class OriginTracing
     {
+        private final Collection<String> classNames;
         private final Collection<Class<?>> classes;
         public final OptionalInt depth;
 
-        private OriginTracing(Collection<Class<?>> classes, OptionalInt depth)
+        private OriginTracing(Collection<String> classNames, OptionalInt depth)
         {
-            this.classes = classes;
+            this.classNames = classNames;
+            this.classes = new HashSet<>(classNames.size(), 1.0F);
             this.depth = depth;
         }
 
         public boolean isEnabled()
         {
-            return !classes.isEmpty();
+            return !classNames.isEmpty();
         }
 
         public boolean shouldTrace(Object object)
         {
+            if (classes.isEmpty())
+            {
+                for (String name : classNames)
+                {
+                    Class<?> clazz = loadClass(name);
+                    if (clazz != null) classes.add(clazz);
+                }
+            }
             for (Class<?> clazz : classes)
             {
                 if (clazz.isInstance(object))
                     return true;
             }
             return false;
+        }
+
+        private Class<?> loadClass(String name)
+        {
+            try
+            {
+                return Class.forName(name, false, getClass().getClassLoader());
+            }
+            catch (ClassNotFoundException e)
+            {
+                Silverfish.LOGGER.error("Unknown class in array originTracing/classes", e);
+                return null;
+            }
         }
     }
 
@@ -96,9 +120,7 @@ public class SilverfishConfig
             var jsonStack = new JsonStack(GSON, root);
             jsonStack.push("originTracing").allow("classes", "depth");
             var depth = jsonStack.maybeInt("depth");
-            Set<Class<?>> classes = jsonStack.streamAs("classes", String.class)
-                .map(this::loadClass)
-                .filter(Predicates.notNull())
+            Set<String> classes = jsonStack.streamAs("classes", String.class)
                 .collect(toSet());
             jsonStack.pop();
             if (!jsonStack.getErrors().isEmpty())
@@ -106,19 +128,6 @@ public class SilverfishConfig
             for (String error : jsonStack.getErrors())
                 Silverfish.LOGGER.error("\t" + error);
             return new SilverfishConfig(new OriginTracing(classes, depth));
-        }
-
-        private Class<?> loadClass(String name)
-        {
-            try
-            {
-                return Class.forName(name, false, getClass().getClassLoader());
-            }
-            catch (ClassNotFoundException e)
-            {
-                Silverfish.LOGGER.error("Unknown class in array originTracing/classes", e);
-                return null;
-            }
         }
     }
 }
