@@ -10,3 +10,5 @@ pluginManagement {
 }
 
 rootProject.name = 'silverfish'
+include 'codegen:templates'
+include 'codegen:processor'

@@ -8,6 +8,8 @@ classes/
 # eclipse
 
 *.launch
+/.apt_generated/
+.factorypath
 
 # idea
 
@@ -31,3 +33,4 @@ bin/
 # fabric
 
 run/
+

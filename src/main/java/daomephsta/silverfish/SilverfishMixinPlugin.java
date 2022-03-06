@@ -34,6 +34,11 @@ public class SilverfishMixinPlugin implements IMixinConfigPlugin
     public List<String> getMixins()
     {
         var mixins = new ArrayList<String>();
+
+        mixins.add("tostring.DefaultedRegistryMixin");
+        mixins.add("tostring.BlockToString");
+        mixins.add("tostring.ItemToString");
+
         if (SilverfishConfig.instance().originTracing.isEnabled())
         {
             mixins.add("origin_tracing.RegistryObjectOriginTracer");
