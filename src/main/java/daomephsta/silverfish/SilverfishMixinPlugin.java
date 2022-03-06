@@ -8,8 +8,6 @@ import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
-import daomephsta.silverfish.origin_tracing.OriginTracingSettings;
-
 public class SilverfishMixinPlugin implements IMixinConfigPlugin
 {
     @Override
@@ -36,7 +34,7 @@ public class SilverfishMixinPlugin implements IMixinConfigPlugin
     public List<String> getMixins()
     {
         var mixins = new ArrayList<String>();
-        if (OriginTracingSettings.isEnabled())
+        if (SilverfishConfig.instance().originTracing.isEnabled())
         {
             mixins.add("origin_tracing.RegistryObjectOriginTracer");
             mixins.add("origin_tracing.SimpleRegistryMixin");

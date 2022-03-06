@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import daomephsta.silverfish.SilverfishConfig;
 import daomephsta.silverfish.origin_tracing.Before;
 import daomephsta.silverfish.origin_tracing.OriginAware;
-import daomephsta.silverfish.origin_tracing.OriginTracingSettings;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
@@ -29,7 +29,7 @@ public class RegistryObjectOriginTracer implements OriginAware
     @Inject(method = "<init>", at = @At("TAIL"))
     private void silverfish_traceOrigin(CallbackInfo info)
     {
-        if (!OriginTracingSettings.shouldTrace(this)) return;
+        if (!SilverfishConfig.instance().originTracing.shouldTrace(this)) return;
         silverfish_origin = StackWalker.getInstance().walk(this::silverfish_originWalker);
     }
 
@@ -40,7 +40,7 @@ public class RegistryObjectOriginTracer implements OriginAware
                 frame.getMethodName().contains("silverfish_traceOrigin"))
             .takeWhile(new Before<>(frame -> frame.getClassName()
                 .equals("net.fabricmc.loader.impl.entrypoint.EntrypointUtils")));
-        OriginTracingSettings.getTraceDepth().ifPresent(origin::limit);
+        SilverfishConfig.instance().originTracing.depth.ifPresent(origin::limit);
         return origin.toList();
     }
 
