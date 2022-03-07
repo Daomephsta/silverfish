@@ -1,22 +1,21 @@
 package daomephsta.silverfish.codegen;
 
-import static java.util.stream.Collectors.toMap;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -42,29 +41,16 @@ public abstract class SilverfishAnnotationProcessor extends AbstractProcessor
             for (Element annotated : roundEnv.getElementsAnnotatedWith(annotationType))
             {
                 var packageElement = (PackageElement) annotated;
-                for (AnnotationMirror annotation : getAnnotationMirrors(annotated, annotationType))
-                {
-                    if (repeatable)
-                    {
-                        for (AnnotationMirror innerAnnotation : unwrapRepeatable(annotation))
-                        {
-                            generate(packageElement.getQualifiedName(),
-                                annotation, getAttributes(innerAnnotation));
-                        }
-                    }
-                    else
-                    {
-                        generate(packageElement.getQualifiedName(),
-                            annotation, getAttributes(annotation));
-                    }
-                }
+                getAnnotationMirrors(annotated, annotationType).forEach(annotation ->
+                    generate(packageElement.getQualifiedName(),
+                        annotation, new AnnotationAttributes(annotation)));
             }
         }
         return true;
     }
 
     protected abstract void generate(Name packageName, AnnotationMirror annotation,
-        Map<String, ? extends AnnotationValue> attributes);
+        AnnotationAttributes attributes);
 
     protected void generateFromTemplate(Map<String, String> replacements,
         String fileName, String templateId)
@@ -98,35 +84,33 @@ public abstract class SilverfishAnnotationProcessor extends AbstractProcessor
             .getResourceAsStream("/daomephsta/silverfish/codegen/template/" + template)));
     }
 
-    private static List<? extends AnnotationMirror> unwrapRepeatable(AnnotationMirror annotation)
+    private Stream<? extends AnnotationMirror> getAnnotationMirrors(Element annotated, TypeElement annotationType)
     {
-        return annotation.getElementValues().entrySet().stream()
-            .filter(e -> e.getKey().getSimpleName().contentEquals("value"))
-            .map(e -> unwrapAnnotationListAttribute(e.getValue()))
-            .findFirst().get();
+        Stream<? extends AnnotationMirror> mirrors = annotated.getAnnotationMirrors().stream()
+            .filter(mirror -> mirror.getAnnotationType().asElement().equals(annotationType));
+        if (repeatable)
+            mirrors = mirrors.flatMap(this::unwrapRepeatable);
+        return mirrors;
     }
 
-    private static List<AnnotationMirror> unwrapAnnotationListAttribute(AnnotationValue value)
+    private Stream<? extends AnnotationMirror> unwrapRepeatable(AnnotationMirror annotation)
+    {
+        var elementValues = annotation.getElementValues();
+        for (ExecutableElement attribute : elementValues.keySet())
+        {
+            if (attribute.getSimpleName().contentEquals("value"))
+                return unwrapAnnotationListAttribute(elementValues.get(attribute));
+        }
+        throw new IllegalStateException(annotation + " has no value attribute");
+    }
+
+    private Stream<? extends AnnotationMirror> unwrapAnnotationListAttribute(AnnotationValue value)
     {
         return ((List<?>) value.getValue()).stream().map(r ->
         {
-            // Eclipse violates the JavaDoc...
             if (r instanceof AnnotationValue rav)
                 return (AnnotationMirror) rav.getValue();
             return (AnnotationMirror) r;
-        }).toList();
-    }
-
-    private static Map<String, ? extends AnnotationValue> getAttributes(AnnotationMirror annotation)
-    {
-        return annotation.getElementValues().entrySet().stream()
-            .collect(toMap(e -> e.getKey().getSimpleName().toString(), Entry::getValue));
-    }
-
-    private static List<? extends AnnotationMirror> getAnnotationMirrors(Element annotated, TypeElement annotationType)
-    {
-        return annotated.getAnnotationMirrors().stream()
-            .filter(mirror -> mirror.getAnnotationType().asElement().equals(annotationType))
-            .toList();
+        });
     }
 }
