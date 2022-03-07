@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.item.Item;
 
 public class Silverfish implements ModInitializer
 {
@@ -13,6 +12,5 @@ public class Silverfish implements ModInitializer
     @Override
     public void onInitialize()
     {
-        new Item(new Item.Settings());
     }
 }

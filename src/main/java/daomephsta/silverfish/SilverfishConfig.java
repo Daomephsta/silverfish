@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.OptionalInt;
 import java.util.Set;
 
-import com.google.common.base.Predicates;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;

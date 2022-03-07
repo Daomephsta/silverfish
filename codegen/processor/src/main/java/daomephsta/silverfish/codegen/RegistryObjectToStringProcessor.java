@@ -12,9 +12,14 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
-@SupportedAnnotationTypes("daomephsta.silverfish.codegen.RegistryObjectToString")
+@SupportedAnnotationTypes("daomephsta.silverfish.codegen.RegistryObjectToString.Container")
 public class RegistryObjectToStringProcessor extends SilverfishAnnotationProcessor
 {
+    public RegistryObjectToStringProcessor()
+    {
+        super(true);
+    }
+
     @Override
     protected void generate(Name packageName, AnnotationMirror annotation,
         Map<String, ? extends AnnotationValue> attributes)

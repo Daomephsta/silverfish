@@ -9,8 +9,8 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -27,6 +27,13 @@ public abstract class SilverfishAnnotationProcessor extends AbstractProcessor
     protected static final Pattern TEMPLATE_DUMMY =
         Pattern.compile("\\/\\*!!(\\w+)\\*\\/.+\\/\\*!!\\*\\/");
 
+    private final boolean repeatable;
+
+    protected SilverfishAnnotationProcessor(boolean repeatable)
+    {
+        this.repeatable = repeatable;
+    }
+
     @Override
     public final boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
     {
@@ -37,8 +44,19 @@ public abstract class SilverfishAnnotationProcessor extends AbstractProcessor
                 var packageElement = (PackageElement) annotated;
                 for (AnnotationMirror annotation : getAnnotationMirrors(annotated, annotationType))
                 {
-                    Map<String, ? extends AnnotationValue> attributes = getAttributes(annotation);
-                    generate(packageElement.getQualifiedName(), annotation, attributes);
+                    if (repeatable)
+                    {
+                        for (AnnotationMirror innerAnnotation : unwrapRepeatable(annotation))
+                        {
+                            generate(packageElement.getQualifiedName(),
+                                annotation, getAttributes(innerAnnotation));
+                        }
+                    }
+                    else
+                    {
+                        generate(packageElement.getQualifiedName(),
+                            annotation, getAttributes(annotation));
+                    }
                 }
             }
         }
@@ -78,6 +96,25 @@ public abstract class SilverfishAnnotationProcessor extends AbstractProcessor
     {
         return new BufferedReader(new InputStreamReader(getClass()
             .getResourceAsStream("/daomephsta/silverfish/codegen/template/" + template)));
+    }
+
+    private static List<? extends AnnotationMirror> unwrapRepeatable(AnnotationMirror annotation)
+    {
+        return annotation.getElementValues().entrySet().stream()
+            .filter(e -> e.getKey().getSimpleName().contentEquals("value"))
+            .map(e -> unwrapAnnotationListAttribute(e.getValue()))
+            .findFirst().get();
+    }
+
+    private static List<AnnotationMirror> unwrapAnnotationListAttribute(AnnotationValue value)
+    {
+        return ((List<?>) value.getValue()).stream().map(r ->
+        {
+            // Eclipse violates the JavaDoc...
+            if (r instanceof AnnotationValue rav)
+                return (AnnotationMirror) rav.getValue();
+            return (AnnotationMirror) r;
+        }).toList();
     }
 
     private static Map<String, ? extends AnnotationValue> getAttributes(AnnotationMirror annotation)
