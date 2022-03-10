@@ -61,6 +61,11 @@ public class JsonStack
         return this;
     }
 
+    public boolean getBoolean(String key)
+    {
+        return child(key, JsonType.BOOLEAN).getAsBoolean();
+    }
+
     public OptionalInt maybeInt(String key)
     {
         Optional<JsonPrimitive> child = maybeChild(key, JsonType.NUMBER);

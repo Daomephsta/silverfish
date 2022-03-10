@@ -29,9 +29,12 @@ public class RegistryObjectToStringProcessor extends SilverfishAnnotationProcess
             "package", packageName.toString(),
             "target", target.getQualifiedName().toString(),
             "name", target.getSimpleName() + "ToString",
-            "registry", registry);
+            "registry", registry,
+            "annotations", attributes.<Boolean>get("overwrite")
+                ? "@org.spongepowered.asm.mixin.Overwrite(remap = false)"
+                : "@java.lang.Override");
         generateFromTemplate(replacements,
             packageName + "." + target.getSimpleName() + "ToString",
-            "DefaultedRegistryObjectToStringTemplate.java");
+            "RegistryObjectToStringTemplate.java");
     }
 }

@@ -35,9 +35,23 @@ public class SilverfishMixinPlugin implements IMixinConfigPlugin
     {
         var mixins = new ArrayList<String>();
 
-        mixins.add("tostring.DefaultedRegistryMixin");
-        mixins.add("tostring.BlockToString");
-        mixins.add("tostring.ItemToString");
+        if (SilverfishConfig.instance().improveToStrings.enabled())
+        {
+            for (String type : List.of("Activity", "Biome", "BlockEntityType",
+                "BlockStateProviderType", "Block", "Carver", "ChunkStatus",
+                "ConfiguredStructureFeature", "DimensionOptions", "DimensionType", "Enchantment",
+                "EntityAttribute", "EntityType", "FeatureSizeType", "Feature", "Fluid",
+                "FoliagePlacerType", "Item", "LootConditionType", "LootFunctionType",
+                "LootNbtProviderType", "LootNumberProviderType", "LootPoolEntryType",
+                "LootScoreProviderType", "MemoryModuleType", "NoiseParameters", "PaintingMotive",
+                "ParticleType", "PointOfInterestType", "Potion", "Schedule", "ScreenHandlerType",
+                "SensorType", "SoundEvent", "StatType", "StatusEffect", "StructureFeature",
+                "StructurePool", "StructureProcessorList", "TreeDecoratorType", "TrunkPlacerType",
+                "VillagerProfession", "VillagerType"))
+            {
+                mixins.add("tostring." + type + "ToString");
+            }
+        }
 
         if (SilverfishConfig.instance().originTracing.isEnabled())
         {

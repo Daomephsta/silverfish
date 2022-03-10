@@ -10,6 +10,7 @@ public @interface RegistryObjectToString
 {
     Class<?> target();
     String registry();
+    boolean overwrite() default false;
 
     @Target(ElementType.PACKAGE)
     public @interface Container

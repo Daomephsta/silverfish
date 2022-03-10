@@ -78,10 +78,13 @@ public class SilverfishConfig
             }
         }
     }
+    public record ImproveToStrings(boolean enabled) {}
+    public final ImproveToStrings improveToStrings;
 
-    private SilverfishConfig(OriginTracing originTracing)
+    private SilverfishConfig(OriginTracing originTracing, ImproveToStrings improveToStrings)
     {
         this.originTracing = originTracing;
+        this.improveToStrings = improveToStrings;
     }
 
     public static SilverfishConfig instance()
@@ -117,16 +120,24 @@ public class SilverfishConfig
             throws JsonParseException
         {
             var jsonStack = new JsonStack(GSON, root);
+
             jsonStack.push("originTracing").allow("classes", "depth");
             var depth = jsonStack.maybeInt("depth");
             Set<String> classes = jsonStack.streamAs("classes", String.class)
                 .collect(toSet());
             jsonStack.pop();
+
+            jsonStack.push("improveToStrings").allow("enabled");
+            boolean improveToStrings = jsonStack.getBoolean("enabled");
+            jsonStack.pop();
+
             if (!jsonStack.getErrors().isEmpty())
                 Silverfish.LOGGER.error("Config loading errors:");
             for (String error : jsonStack.getErrors())
                 Silverfish.LOGGER.error("\t" + error);
-            return new SilverfishConfig(new OriginTracing(classes, depth));
+            return new SilverfishConfig(
+                new OriginTracing(classes, depth),
+                new ImproveToStrings(improveToStrings));
         }
     }
 }

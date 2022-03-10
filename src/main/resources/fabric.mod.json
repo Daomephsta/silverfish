@@ -10,8 +10,11 @@
 
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "daomephsta.silverfish.Silverfish"
+    "client": [
+      "daomephsta.silverfish.client.SilverfishClientInitialiser"
+    ],
+    "server": [
+      "daomephsta.silverfish.server.SilverfishDedicatedServerInitialiser"
     ]
   },
   "mixins": [

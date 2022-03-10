@@ -24,7 +24,7 @@ import javax.tools.JavaFileObject;
 public abstract class SilverfishAnnotationProcessor extends AbstractProcessor
 {
     protected static final Pattern TEMPLATE_DUMMY =
-        Pattern.compile("\\/\\*!!(\\w+)\\*\\/.+\\/\\*!!\\*\\/");
+        Pattern.compile("\\/\\*!!(\\w+)\\*\\/.*\\/\\*!!\\*\\/");
 
     private final boolean repeatable;
 
@@ -42,8 +42,8 @@ public abstract class SilverfishAnnotationProcessor extends AbstractProcessor
             {
                 var packageElement = (PackageElement) annotated;
                 getAnnotationMirrors(annotated, annotationType).forEach(annotation ->
-                    generate(packageElement.getQualifiedName(),
-                        annotation, new AnnotationAttributes(annotation)));
+                    generate(packageElement.getQualifiedName(), annotation,
+                        new AnnotationAttributes(annotation, processingEnv.getElementUtils())));
             }
         }
         return true;
