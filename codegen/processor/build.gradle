@@ -6,5 +6,5 @@ sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
 jar {
-	from project(':codegen:templates').file('src/main/resources')
+	from project(':codegen-templates').file('src/main/resources')
 }

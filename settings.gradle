@@ -10,5 +10,14 @@ pluginManagement {
 }
 
 rootProject.name = 'silverfish'
-include 'codegen:templates'
-include 'codegen:processor'
+
+file('codegen').eachDir {dir ->
+	if (!file("$dir/build.gradle").exists())
+		return
+	include dir.name
+	// Just including creates an unwanted ':codegen' subproject
+	project(":${dir.name}").with {
+		projectDir = dir
+		name = "codegen-${dir.name}"
+	}
+}
