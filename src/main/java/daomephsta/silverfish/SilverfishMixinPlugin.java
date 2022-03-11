@@ -37,6 +37,7 @@ public class SilverfishMixinPlugin implements IMixinConfigPlugin
 
         if (SilverfishConfig.instance().improveToStrings.enabled())
         {
+            mixins.add("tostring.DefaultedRegistryMixin");
             for (String type : List.of("Activity", "Biome", "BlockEntityType",
                 "BlockStateProviderType", "Block", "Carver", "ChunkStatus",
                 "ConfiguredStructureFeature", "DimensionOptions", "DimensionType", "Enchantment",
