@@ -9,6 +9,10 @@ import net.minecraft.util.registry.Registry;
 @Mixin(/*!!target*/Object/*!!*/.class)
 public class /*!!name*/RegistryObjectToStringTemplate/*!!*/
 {
+    /**
+     * @author Daomephsta
+     * @reason Improve informativity & consistency of registry object toString() implementations
+     */
     /*!!annotations*/@Override/*!!*/
     public String toString()
     {
