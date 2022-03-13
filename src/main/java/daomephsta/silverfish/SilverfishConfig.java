@@ -132,9 +132,13 @@ public class SilverfishConfig
             jsonStack.pop();
 
             if (!jsonStack.getErrors().isEmpty())
+            {
                 Silverfish.LOGGER.error("Config loading errors:");
-            for (String error : jsonStack.getErrors())
-                Silverfish.LOGGER.error("\t" + error);
+                for (String error : jsonStack.getErrors())
+                    Silverfish.LOGGER.error("\t" + error);
+                System.err.println("Config loading failed, JVM terminated");
+                System.exit(-1);
+            }
             return new SilverfishConfig(
                 new OriginTracing(classes, depth),
                 new ImproveToStrings(improveToStrings));
