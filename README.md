@@ -10,4 +10,5 @@ Configure the features you want using their [wiki pages](https://github.com/Daom
 ## Features
  * [Origin Tracing](https://github.com/Daomephsta/silverfish/wiki/Origin-Tracing) - 
 Assists with debugging `Some intrusive holders were not added to registry`  
-	
+* [Improved toString()](https://github.com/Daomephsta/silverfish/wiki/Improved-toString()) - 
+More consistent and informative vanilla toString() implementations	
