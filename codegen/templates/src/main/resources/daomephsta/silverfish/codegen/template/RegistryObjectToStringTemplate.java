@@ -18,7 +18,7 @@ public class /*!!name*/RegistryObjectToStringTemplate/*!!*/
     {
         String id = Registries.getId(Registry./*!!registry*/BLOCK_KEY/*!!*/, this)
             .map(Identifier::toString)
-            .orElse("not yet registered");
+            .orElse("not yet registered, hashCode " + Integer.toHexString(hashCode()));
         return getClass().getTypeName() + "{" + id + "}";
     }
 }
