@@ -1,5 +1,6 @@
 package daomephsta.silverfish.mixin.origin_tracing;
 
+import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.util.List;
 import java.util.stream.Stream;
@@ -30,18 +31,28 @@ public class RegistryObjectOriginTracer implements OriginAware
     private void silverfish_traceOrigin(CallbackInfo info)
     {
         if (!SilverfishConfig.instance().originTracing.shouldTrace(this)) return;
-        silverfish_origin = StackWalker.getInstance().walk(this::silverfish_originWalker);
+        silverfish_origin = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE)
+            .walk(this::silverfish_originWalker);
     }
 
     private List<StackFrame> silverfish_originWalker(Stream<StackFrame> trace)
     {
         Stream<StackFrame> origin = trace
-            .dropWhile(frame -> frame.getMethodName().equals("<init>") ||
-                frame.getMethodName().contains("silverfish_traceOrigin"))
+            // Trim the head until it's the frame calling the constructor
+            .dropWhile(this::silverfish_trimHead)
+            // Trim the tail until it's the most recent mod entrypoint
             .takeWhile(new Before<>(frame -> frame.getClassName()
                 .equals("net.fabricmc.loader.impl.entrypoint.EntrypointUtils")));
         SilverfishConfig.instance().originTracing.depth.ifPresent(origin::limit);
         return origin.toList();
+    }
+
+    private boolean silverfish_trimHead(StackFrame frame)
+    {
+        return frame.getMethodName().contains("silverfish_traceOrigin") ||
+            frame.getMethodName().equals("<init>") &&
+            // Check the constructor is declared by the target or a supertype
+            frame.getDeclaringClass().isAssignableFrom(getClass());
     }
 
     @Override
