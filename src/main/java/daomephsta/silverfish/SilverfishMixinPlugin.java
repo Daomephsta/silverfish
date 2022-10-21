@@ -40,13 +40,13 @@ public class SilverfishMixinPlugin implements IMixinConfigPlugin
             mixins.add("tostring.DefaultedRegistryMixin");
             for (String type : List.of("Activity", "Biome", "BlockEntityType",
                 "BlockStateProviderType", "Block", "Carver", "ChunkStatus",
-                "ConfiguredStructureFeature", "DimensionOptions", "DimensionType", "Enchantment",
+                "DimensionOptions", "DimensionType", "Enchantment",
                 "EntityAttribute", "EntityType", "FeatureSizeType", "Feature", "Fluid",
                 "FoliagePlacerType", "Item", "LootConditionType", "LootFunctionType",
                 "LootNbtProviderType", "LootNumberProviderType", "LootPoolEntryType",
-                "LootScoreProviderType", "MemoryModuleType", "NoiseParameters", "PaintingMotive",
+                "LootScoreProviderType", "MemoryModuleType", "PaintingVariant",
                 "ParticleType", "PointOfInterestType", "Potion", "Schedule", "ScreenHandlerType",
-                "SensorType", "SoundEvent", "StatType", "StatusEffect", "StructureFeature",
+                "SensorType", "SoundEvent", "StatType", "StatusEffect", "Structure",
                 "StructurePool", "StructureProcessorList", "TreeDecoratorType", "TrunkPlacerType",
                 "VillagerProfession", "VillagerType"))
             {
