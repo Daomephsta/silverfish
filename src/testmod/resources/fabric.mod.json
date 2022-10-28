@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "silverfish_test",
+  "version": "${version}",
+  "name": "Silverfish Test",
+  "description": "Silverfish Test",
+  "authors": ["Daomephsta"],
+
+  "license": "MIT",
+
+  "environment": "*",
+  "entrypoints": {
+  	"main": ["daomephsta.silverfish.test.SilverfishTest"]
+  },
+  "mixins": [
+  ],
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": ">=1.19.2",
+    "java": ">=17"
+  }
+}

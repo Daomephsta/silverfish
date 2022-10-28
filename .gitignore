@@ -34,3 +34,4 @@ bin/
 
 run/
 
+/.apt_generated_tests/
