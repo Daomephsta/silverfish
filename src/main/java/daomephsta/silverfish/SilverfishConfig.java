@@ -8,10 +8,10 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.OptionalInt;
 import java.util.Set;
 
+import com.google.common.base.Predicates;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -32,13 +32,12 @@ public class SilverfishConfig
     public static class OriginTracing
     {
         private final Collection<String> classNames;
-        private final Collection<Class<?>> classes;
+        private Collection<Class<?>> classes;
         public final OptionalInt depth;
 
         private OriginTracing(Collection<String> classNames, OptionalInt depth)
         {
             this.classNames = classNames;
-            this.classes = new HashSet<>(classNames.size(), 1.0F);
             this.depth = depth;
         }
 
@@ -49,13 +48,12 @@ public class SilverfishConfig
 
         public boolean shouldTrace(Object object)
         {
-            if (classes.isEmpty())
+            if (classes == null)
             {
-                for (String name : classNames)
-                {
-                    Class<?> clazz = loadClass(name);
-                    if (clazz != null) classes.add(clazz);
-                }
+                classes = classNames.stream()
+                    .map(this::loadClass)
+                    .filter(Predicates.notNull())
+                    .collect(toSet());
             }
             for (Class<?> clazz : classes)
             {
