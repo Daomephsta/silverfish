@@ -54,10 +54,10 @@ public class SilverfishMixinPlugin implements IMixinConfigPlugin
             }
         }
 
+        mixins.add("origin_tracing.SimpleRegistryMixin");
         if (SilverfishConfig.instance().originTracing.isEnabled())
         {
             mixins.add("origin_tracing.RegistryObjectOriginTracer");
-            mixins.add("origin_tracing.SimpleRegistryMixin");
         }
         return mixins;
     }

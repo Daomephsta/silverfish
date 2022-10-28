@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import daomephsta.silverfish.Silverfish;
+import daomephsta.silverfish.SilverfishConfig;
 import daomephsta.silverfish.origin_tracing.OriginAware;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
@@ -33,6 +34,12 @@ public abstract class SimpleRegistryMixin<T> extends MutableRegistry<T>
     private void silverfish_improveIntrusiveHoldersError(CallbackInfoReturnable<Registry<T>> info,
         List<RegistryEntry.Reference<?>> notAdded)
     {
+        if (!SilverfishConfig.instance().originTracing.isEnabled())
+        {
+            Silverfish.LOGGER.info("No origin traces for {} (originTracing.classes is empty)",
+                notAdded.stream().map(Reference::value).toList());
+            return;
+        }
         for (Reference<?> entry : notAdded)
         {
             if (entry.value() instanceof OriginAware originAware && originAware.silverfish_getOrigin() != null)
@@ -46,8 +53,13 @@ public abstract class SimpleRegistryMixin<T> extends MutableRegistry<T>
                 }
                 Silverfish.LOGGER.info(origin.toString());
             }
+            else if (!SilverfishConfig.instance().originTracing.shouldTrace(entry.value()))
+            {
+                Silverfish.LOGGER.info("No origin trace for {} ({} is not in originTracing.classes)",
+                    entry.value(), entry.value().getClass().getName());
+            }
             else
-                Silverfish.LOGGER.info("No origin trace for " + entry.value());
+                Silverfish.LOGGER.info("No origin trace for {} (unknown reason)", entry.value());
         }
     }
 }
