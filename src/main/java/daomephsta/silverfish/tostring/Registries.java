@@ -4,8 +4,8 @@ import java.util.Optional;
 
 import daomephsta.silverfish.Silverfish;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 
 public abstract class Registries
 {
@@ -18,7 +18,7 @@ public abstract class Registries
         return Silverfish.proxy()
             .flatMap(proxy -> proxy.getRegistryManager())
             .flatMap(manager -> (Optional<Registry<Object>>) manager.getOptional(key))
-            .or(() -> (Optional<Registry<Object>>) Registry.REGISTRIES.getOrEmpty(key.getValue()))
+            .or(() -> (Optional<Registry<Object>>) net.minecraft.registry.Registries.REGISTRIES.getOrEmpty(key.getValue()))
             .flatMap(registry -> getId(registry, value));
     }
 

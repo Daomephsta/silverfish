@@ -3,8 +3,11 @@ package daomephsta.silverfish.mixin.origin_tracing;
 import java.lang.StackWalker.StackFrame;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -13,31 +16,28 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import daomephsta.silverfish.Silverfish;
 import daomephsta.silverfish.SilverfishConfig;
 import daomephsta.silverfish.origin_tracing.OriginAware;
-import net.minecraft.util.registry.MutableRegistry;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntry.Reference;
-import net.minecraft.util.registry.SimpleRegistry;
+import net.minecraft.registry.MutableRegistry;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntry.Reference;
+import net.minecraft.registry.SimpleRegistry;
 
 @Mixin(SimpleRegistry.class)
-public abstract class SimpleRegistryMixin<T> extends MutableRegistry<T>
+public abstract class SimpleRegistryMixin<T> implements MutableRegistry<T>
 {
-    // Required to compile, ignored by Mixin
-    private SimpleRegistryMixin()
-    {
-        super(null, null);
-    }
+
+    @Shadow @Nullable private Map<T, Reference<T>> intrusiveValueToEntry;
 
     @Inject(method = "freeze",
         at = @At(value = "NEW", target = "java.lang.IllegalStateException", ordinal = 1),
         locals = LocalCapture.CAPTURE_FAILHARD)
-    private void silverfish_improveIntrusiveHoldersError(CallbackInfoReturnable<Registry<T>> info,
-        List<RegistryEntry.Reference<?>> notAdded)
+    private void silverfish_improveIntrusiveHoldersError(CallbackInfoReturnable<Registry<T>> info)
     {
+        var notAdded = this.intrusiveValueToEntry.values().stream().toList();
         if (!SilverfishConfig.instance().originTracing.isEnabled())
         {
             Silverfish.LOGGER.info("No origin traces for {} (originTracing.classes is empty)",
-                notAdded.stream().map(Reference::value).toList());
+                    notAdded.stream().map(Reference::value).toList());
             return;
         }
         for (Reference<?> entry : notAdded)

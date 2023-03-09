@@ -6,7 +6,7 @@ import daomephsta.silverfish.Silverfish;
 import daomephsta.silverfish.Silverfish.DistributionProxy;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.world.World;
 
 public class SilverfishClientInitialiser implements ClientModInitializer

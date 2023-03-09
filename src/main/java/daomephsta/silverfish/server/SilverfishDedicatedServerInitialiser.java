@@ -7,7 +7,7 @@ import daomephsta.silverfish.Silverfish.DistributionProxy;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.registry.DynamicRegistryManager;
 
 public class SilverfishDedicatedServerInitialiser implements DedicatedServerModInitializer
 {

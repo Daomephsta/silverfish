@@ -4,7 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import daomephsta.silverfish.tostring.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 @Mixin(/*!!target*/Object/*!!*/.class)
 public class /*!!name*/RegistryObjectToStringTemplate/*!!*/
@@ -16,7 +16,7 @@ public class /*!!name*/RegistryObjectToStringTemplate/*!!*/
     /*!!annotations*/@Override/*!!*/
     public String toString()
     {
-        String id = Registries.getId(Registry./*!!registry*/BLOCK_KEY/*!!*/, this)
+        String id = Registries.getId(net.minecraft.registry.RegistryKeys./*!!registry*/BLOCK/*!!*/, this)
             .map(Identifier::toString)
             .orElse("not yet registered, hashCode " + Integer.toHexString(hashCode()));
         return getClass().getTypeName() + "{" + id + "}";
