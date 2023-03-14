@@ -33,7 +33,7 @@ public abstract class SimpleRegistryMixin<T> implements MutableRegistry<T>
         locals = LocalCapture.CAPTURE_FAILHARD)
     private void silverfish_improveIntrusiveHoldersError(CallbackInfoReturnable<Registry<T>> info)
     {
-        var notAdded = this.intrusiveValueToEntry.values().stream().toList();
+      Collection<Reference<T>> notAdded = this.intrusiveValueToEntry.values();
         if (!SilverfishConfig.instance().originTracing.isEnabled())
         {
             Silverfish.LOGGER.info("No origin traces for {} (originTracing.classes is empty)",
