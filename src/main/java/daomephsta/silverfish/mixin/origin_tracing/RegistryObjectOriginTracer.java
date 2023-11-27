@@ -27,8 +27,8 @@ public class RegistryObjectOriginTracer implements OriginAware
     @Unique
     private @Final List<StackFrame> silverfish_origin;
 
-    @Inject(method = "<init>", at = @At("TAIL"))
-    private void silverfish_traceOrigin(CallbackInfo info)
+    @Inject(method = "<init>", at = @At("TAIL"), remap = false)
+    private void silverfish$traceOrigin(CallbackInfo info)
     {
         if (!SilverfishConfig.instance().originTracing.shouldTrace(this)) return;
         silverfish_origin = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE)
@@ -42,14 +42,14 @@ public class RegistryObjectOriginTracer implements OriginAware
             .dropWhile(this::silverfish_trimHead)
             // Trim the tail until it's the most recent mod entrypoint
             .takeWhile(new Before<>(frame -> frame.getClassName()
-                .equals("net.fabricmc.loader.impl.entrypoint.EntrypointUtils")));
+                .contains("net.fabricmc.loader.impl")));
         SilverfishConfig.instance().originTracing.depth.ifPresent(origin::limit);
         return origin.toList();
     }
 
     private boolean silverfish_trimHead(StackFrame frame)
     {
-        return frame.getMethodName().contains("silverfish_traceOrigin") ||
+        return frame.getMethodName().contains("silverfish$traceOrigin") ||
             frame.getMethodName().equals("<init>") &&
             // Check the constructor is declared by the target or a supertype
             frame.getDeclaringClass().isAssignableFrom(getClass());

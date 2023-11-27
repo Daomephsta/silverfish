@@ -4,7 +4,6 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import daomephsta.silverfish.tostring.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.registry.Registry;
 
 @Mixin(/*!!target*/Object/*!!*/.class)
 public class /*!!name*/RegistryObjectToStringTemplate/*!!*/

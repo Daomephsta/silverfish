@@ -1,12 +1,11 @@
 package daomephsta.silverfish.mixin.tostring;
 
-import net.minecraft.registry.SimpleDefaultedRegistry;
 import org.spongepowered.asm.mixin.Mixin;
 
 import daomephsta.silverfish.tostring.DefaultedRegistryExtension;
-import net.minecraft.util.Identifier;
-import net.minecraft.registry.DefaultedRegistry;
+import net.minecraft.registry.SimpleDefaultedRegistry;
 import net.minecraft.registry.SimpleRegistry;
+import net.minecraft.util.Identifier;
 
 @Mixin(SimpleDefaultedRegistry.class)
 public class DefaultedRegistryMixin<T> extends SimpleRegistry<T> implements DefaultedRegistryExtension<T>

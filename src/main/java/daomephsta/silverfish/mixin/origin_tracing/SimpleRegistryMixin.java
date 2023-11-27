@@ -1,8 +1,8 @@
 package daomephsta.silverfish.mixin.origin_tracing;
 
 import java.lang.StackWalker.StackFrame;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
@@ -18,9 +18,8 @@ import daomephsta.silverfish.SilverfishConfig;
 import daomephsta.silverfish.origin_tracing.OriginAware;
 import net.minecraft.registry.MutableRegistry;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryEntry.Reference;
 import net.minecraft.registry.SimpleRegistry;
+import net.minecraft.registry.entry.RegistryEntry.Reference;
 
 @Mixin(SimpleRegistry.class)
 public abstract class SimpleRegistryMixin<T> implements MutableRegistry<T>
@@ -33,7 +32,7 @@ public abstract class SimpleRegistryMixin<T> implements MutableRegistry<T>
         locals = LocalCapture.CAPTURE_FAILHARD)
     private void silverfish_improveIntrusiveHoldersError(CallbackInfoReturnable<Registry<T>> info)
     {
-      Collection<Reference<T>> notAdded = this.intrusiveValueToEntry.values();
+        Collection<Reference<T>> notAdded = this.intrusiveValueToEntry.values();
         if (!SilverfishConfig.instance().originTracing.isEnabled())
         {
             Silverfish.LOGGER.info("No origin traces for {} (originTracing.classes is empty)",
