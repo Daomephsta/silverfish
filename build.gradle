@@ -59,6 +59,15 @@ jar {
 	}
 }
 
+def perDevProperties = new Properties()
+file("per-dev.properties").withInputStream(perDevProperties.&load)
+
+tasks.register('deployToProduction', Copy) {
+	dependsOn 'build'
+    from remapJar.archiveFile
+    into file(perDevProperties.deployDirectory)
+}
+
 // configure the maven publication
 publishing {
 	publications {
